@@ -1,0 +1,63 @@
+$ start-all.sh
+
+$ jps
+4193 ResourceManager
+4691 Jps
+3876 SecondaryNameNode
+4566 NodeManager
+3050 NameNode
+3391 DataNode
+
+$ hdfs dfs -mkdir /xyz
+
+$ hadoop fs -ls /
+Found 13 items
+drwxr-xr-x   - hduser supergroup          0 2022-06-04 09:48 /FFF
+drwxr-xr-x   - hduser supergroup          0 2022-06-04 10:10 /abc
+drwxr-xr-x   - hduser supergroup          0 2022-06-03 14:39 /folder1
+drwxr-xr-x   - hduser supergroup          0 2022-06-03 15:00 /folder2
+drwxr-xr-x   - hduser supergroup          0 2022-06-03 15:00 /folder3
+drwxr-xr-x   - hduser supergroup          0 2022-06-01 14:48 /lab1
+drwxr-xr-x   - hduser supergroup          0 2019-10-24 11:08 /output
+drwxr-xr-x   - hduser supergroup          0 2022-06-01 14:48 /pratibha
+drwxr-xr-x   - hduser supergroup          0 2019-10-24 10:47 /rgs
+drwxr-xr-x   - hduser supergroup          0 2022-06-03 12:05 /test
+drwxrwxr-x   - hduser supergroup          0 2019-08-01 16:19 /tmp
+drwxr-xr-x   - hduser supergroup          0 2019-08-01 16:03 /user
+drwxr-xr-x   - hduser supergroup          0 2022-06-06 11:33 /xyz
+
+$ hdfs dfs -put /home/hduser/Desktop/welcome.txt /xyz/Wel.txt
+
+$ hdfs dfs -cat /abc/WC.txt
+Hadoop lab
+
+$ hdfs dfs -copyFromLocal /home/hduser/Desktop/welcome.txt /xyz/Wel.txt
+copyFromLocal: `/xyz/Wel.txt': File exists
+
+$ hdfs dfs -get /abc/WC.txt /home/hduser/Downloads/wwc.txt
+
+$ hdfs dfs -getmerge /abc/WC.txt /abc/WC2.txt /home/hduser/Desktop/Merge.txt
+
+$ hadoop fs -getfacl /abc/
+# file: /abc
+# owner: hduser
+# group: supergroup
+user::rwx
+group::r-x
+other::r-x
+
+$ hdfs dfs -copyToLocal /abc/WC2.txt /home/hduser/Desktop
+
+$ hadoop fs -mv /abc /FFF
+$ hdfs dfs -ls /FFF
+Found 3 items
+-rw-r--r--   1 hduser supergroup         11 2022-06-04 09:42 /FFF/WC.txt
+-rw-r--r--   1 hduser supergroup         20 2022-06-04 09:48 /FFF/WC2.txt
+drwxr-xr-x   - hduser supergroup          0 2022-06-04 10:10 /FFF/abc
+
+$ hadoop fs -cp /FFF/ /xxx
+$ hadoop fs -ls /xxx
+Found 3 items
+-rw-r--r--   1 hduser supergroup         11 2022-06-06 12:19 /xxx/WC.txt
+-rw-r--r--   1 hduser supergroup         20 2022-06-06 12:19 /xxx/WC2.txt
+drwxr-xr-x   - hduser supergroup          0 2022-06-06 12:19 /xxx/abc

@@ -1,0 +1,98 @@
+cqlsh> create keyspace mployee_space WITH REPLICATION = {'class' : 'SimpleStrategy','replication_factor':2};
+
+CREATE TABLE employee_space.employee_info (emp_id int PRIMARY KEY,emp_name text,designation text,date_of_joining timestamp,salary float,dept_name text);
+
+cqlsh> begin batch INSERT INTO employee_space.employee_info(emp_id,emp_name,designation,date_of_joining,salary,dept_name) VALUES(1,'Damodar','Manager','2022-01-24',100000,'Marketing');
+   ... apply batch;
+cqlsh> begin batch INSERT INTO employee_space.employee_info(emp_id,emp_name,designation,date_of_joining,salary,dept_name) VALUES(2,'Mahalaxmi','Accountant','2021-01-24',200000,'Accounts');
+   ... INSERT INTO employee_space.employee_info(emp_id,emp_name,designation,date_of_joining,salary,dept_name) VALUES(3,'Mahesh','Manager','2021-03-24',500000,'Marketing');
+   ... INSERT INTO employee_space.employee_info(emp_id,emp_name,designation,date_of_joining,salary,dept_name) VALUES(4,'Nidhi','Administrator','2021-05-24',500000,'Administration');
+   ... INSERT INTO employee_space.employee_info(emp_id,emp_name,designation,date_of_joining,salary,dept_name) VALUES(5,'Rahul','Administrator','2009-05-24',2000000,'Administration');
+   ... apply batch;
+
+cqlsh> use employee_space;
+
+cqlsh:employee_space> select * from employee_info;
+
+ emp_id | date_of_joining                 | dept_name      | designation   | emp_name  | salary
+--------+---------------------------------+----------------+---------------+-----------+--------
+      5 | 2009-05-23 18:30:00.000000+0000 | Administration | Administrator |     Rahul |  2e+06
+      1 | 2022-01-23 18:30:00.000000+0000 |      Marketing |       Manager |   Damodar |  1e+05
+      2 | 2021-01-23 18:30:00.000000+0000 |       Accounts |    Accountant | Mahalaxmi |  2e+05
+      4 | 2021-05-23 18:30:00.000000+0000 | Administration | Administrator |     Nidhi |  5e+05
+      3 | 2021-03-23 18:30:00.000000+0000 |      Marketing |       Manager |    Mahesh |  5e+05
+
+(5 rows)
+
+
+cqlsh:employee_space> update employee_info set emp_name='Radha' where emp_id=1;
+
+cqlsh:employee_space> update employee_info set dept_name='Development' where emp_id=1;
+
+cqlsh:employee_space> select * from employee_info;
+
+ emp_id | date_of_joining                 | dept_name      | designation   | emp_name  | salary
+--------+---------------------------------+----------------+---------------+-----------+--------
+      5 | 2009-05-23 18:30:00.000000+0000 | Administration | Administrator |     Rahul |  2e+06
+      1 | 2022-01-23 18:30:00.000000+0000 |    Development |       Manager |     Radha |  1e+05
+      2 | 2021-01-23 18:30:00.000000+0000 |       Accounts |    Accountant | Mahalaxmi |  2e+05
+      4 | 2021-05-23 18:30:00.000000+0000 | Administration | Administrator |     Nidhi |  5e+05
+      3 | 2021-03-23 18:30:00.000000+0000 |      Marketing |       Manager |    Mahesh |  5e+05
+
+(5 rows)
+
+cqlsh:employee_space> alter table employee_info add projects set<text>;
+
+cqlsh:employee_space> update employee_info set projects=projects+{'Web development','machine learning'} where emp_id=2;
+
+cqlsh:employee_space> select * from employee_info;
+
+ emp_id | date_of_joining                 | dept_name      | designation   | emp_name  | projects                                | salary
+--------+---------------------------------+----------------+---------------+-----------+-----------------------------------------+--------
+      5 | 2009-05-23 18:30:00.000000+0000 | Administration | Administrator |     Rahul |                                    null |  2e+06
+      1 | 2022-01-23 18:30:00.000000+0000 |    Development |       Manager |     Radha |                                    null |  1e+05
+      2 | 2021-01-23 18:30:00.000000+0000 |       Accounts |    Accountant | Mahalaxmi | {'Web development', 'machine learning'} |  2e+05
+      4 | 2021-05-23 18:30:00.000000+0000 | Administration | Administrator |     Nidhi |                                    null |  5e+05
+      3 | 2021-03-23 18:30:00.000000+0000 |      Marketing |       Manager |    Mahesh |                                    null |  5e+05
+
+(5 rows)
+cqlsh:employee_space> update employee_info set projects=projects+{'Web development','machine learning','cybersecurity'} where emp_id=5;
+
+cqlsh:employee_space> select * from employee_info;
+
+emp_id | date_of_joining                 | dept_name      | designation   | emp_name  | projects                                                 | salary
+--------+---------------------------------+----------------+---------------+-----------+----------------------------------------------------------+--------
+      5 | 2009-05-23 18:30:00.000000+0000 | Administration | Administrator |     Rahul | {'Web development', 'cybersecurity', 'machine learning'} |  2e+06
+      1 | 2022-01-23 18:30:00.000000+0000 |    Development |       Manager |     Radha |                                                     null |  1e+05
+      2 | 2021-01-23 18:30:00.000000+0000 |       Accounts |    Accountant | Mahalaxmi |                  {'Web development', 'machine learning'} |  2e+05
+      4 | 2021-05-23 18:30:00.000000+0000 | Administration | Administrator |     Nidhi |                                                     null |  5e+05
+      3 | 2021-03-23 18:30:00.000000+0000 |      Marketing |       Manager |    Mahesh |                                                     null |  5e+05
+
+(5 rows)
+
+cqlsh:employee_space> INSERT INTO employee_space.employee_info(emp_id,emp_name,designation,date_of_joining,salary,dept_name) VALUES(6,'Harshitha','Manager','2022-01-24',100000,'Marketing') using ttl 15;
+
+cqlsh:employee_space> select * from employee_info;
+
+ emp_id | date_of_joining                 | dept_name      | designation   | emp_name  | projects                                                 | salary
+--------+---------------------------------+----------------+---------------+-----------+----------------------------------------------------------+--------
+      5 | 2009-05-23 18:30:00.000000+0000 | Administration | Administrator |     Rahul | {'Web development', 'cybersecurity', 'machine learning'} |  2e+06
+      1 | 2022-01-23 18:30:00.000000+0000 |    Development |       Manager |     Radha |                                                     null |  1e+05
+      2 | 2021-01-23 18:30:00.000000+0000 |       Accounts |    Accountant | Mahalaxmi |                  {'Web development', 'machine learning'} |  2e+05
+      4 | 2021-05-23 18:30:00.000000+0000 | Administration | Administrator |     Nidhi |                                                     null |  5e+05
+      6 | 2022-01-23 18:30:00.000000+0000 |      Marketing |       Manager | Harshitha |                                                     null |  1e+05
+      3 | 2021-03-23 18:30:00.000000+0000 |      Marketing |       Manager |    Mahesh |                                                     null |  5e+05
+
+(6 rows)
+
+cqlsh:employee_space> select * from employee_info;
+
+ emp_id | date_of_joining                 | dept_name      | designation   | emp_name  | projects                                                 | salary
+--------+---------------------------------+----------------+---------------+-----------+----------------------------------------------------------+--------
+      5 | 2009-05-23 18:30:00.000000+0000 | Administration | Administrator |     Rahul | {'Web development', 'cybersecurity', 'machine learning'} |  2e+06
+      1 | 2022-01-23 18:30:00.000000+0000 |    Development |       Manager |     Radha |                                                     null |  1e+05
+      2 | 2021-01-23 18:30:00.000000+0000 |       Accounts |    Accountant | Mahalaxmi |                  {'Web development', 'machine learning'} |  2e+05
+      4 | 2021-05-23 18:30:00.000000+0000 | Administration | Administrator |     Nidhi |                                                     null |  5e+05
+      3 | 2021-03-23 18:30:00.000000+0000 |      Marketing |       Manager |    Mahesh |                                                     null |  5e+05
+
+(5 rows)
