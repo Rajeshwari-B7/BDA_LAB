@@ -1,0 +1,65 @@
+cqlsh> create keyspace library_space WITH REPLICATION={'class':'SimpleStrategy','replication_factor':2};
+
+cqlsh> use library_space;
+
+cqlsh:library_space> create table library_info(stud_id int,counter_value counter,stud_name text,book_name text,book_id int,date_of_issue timestamp,PRIMARY KEY(stud_id,stud_name,book_name,book_id,date_of_issue));
+
+cqlsh:library_space> update library_info set counter_value=counter_value+1 where stud_id=1 and stud_name='abc' and book_name='book1' and book_id=11 and date_of_issue='2022-01-30';
+
+cqlsh:library_space> update library_info set counter_value=counter_value+1 where stud_id=2 and stud_name='def' and book_name='book2' and book_id=12 and date_of_issue='2022-03-30';
+
+cqlsh:library_space> update library_info set counter_value=counter_value+1 where stud_id=3 and stud_name='ghi' and book_name='book3' and book_id=13 and date_of_issue='2022-05-30';
+
+cqlsh:library_space> update library_info set counter_value=counter_value+1 where stud_id=4 and stud_name='jkl' and book_name='book4' and book_id=14 and date_of_issue='2022-07-30';
+
+cqlsh:library_space> update library_info set counter_value=counter_value+1 where stud_id=5 and stud_name='mno' and book_name='book5' and book_id=15 and date_of_issue='2022-09-30';
+
+cqlsh:library_space> select * from library_info;
+
+ stud_id | stud_name | book_name | book_id | date_of_issue                   | counter_value
+---------+-----------+-----------+---------+---------------------------------+---------------
+       5 |       mno |     book5 |      15 | 2022-09-29 18:30:00.000000+0000 |             1
+       1 |       abc |     book1 |      11 | 2022-01-29 18:30:00.000000+0000 |             1
+       2 |       def |     book2 |      12 | 2022-03-29 18:30:00.000000+0000 |             1
+       4 |       jkl |     book4 |      14 | 2022-07-29 18:30:00.000000+0000 |             1
+       3 |       ghi |     book3 |      13 | 2022-05-29 18:30:00.000000+0000 |             1
+
+(5 rows)
+
+cqlsh:library_space> update library_info set counter_value=counter_value+1 where stud_id=5 and stud_name='mno' and book_name='book5' and book_id=15 and date_of_issue='2022-09-30';
+
+cqlsh:library_space> select * from library_info;
+
+ stud_id | stud_name | book_name | book_id | date_of_issue                   | counter_value
+---------+-----------+-----------+---------+---------------------------------+---------------
+       5 |       mno |     book5 |      15 | 2022-09-29 18:30:00.000000+0000 |             2
+       1 |       abc |     book1 |      11 | 2022-01-29 18:30:00.000000+0000 |             1
+       2 |       def |     book2 |      12 | 2022-03-29 18:30:00.000000+0000 |             1
+       4 |       jkl |     book4 |      14 | 2022-07-29 18:30:00.000000+0000 |             1
+       3 |       ghi |     book3 |      13 | 2022-05-29 18:30:00.000000+0000 |             1
+
+(5 rows)
+
+cqlsh:library_space> copy library_info(stud_id,stud_name,book_name,book_id,date_of_issue,counter_value) to '/home/bmscecse/Desktop/bda.csv';
+
+Using 11 child processes
+
+Starting copy of library_space.library_info with columns [stud_id, stud_name, book_name, book_id, date_of_issue, counter_value].
+Processed: 5 rows; Rate:      45 rows/s; Avg. rate:      45 rows/s
+5 rows exported to 1 files in 0.121 seconds.
+
+cqlsh:library_space> create table library_info_copy(stud_id int,counter_value counter,stud_name text,book_name text,book_id int,date_of_issue timestamp,PRIMARY KEY(stud_id,stud_name,book_name,book_id,date_of_issue));
+
+cqlsh:library_space> copy library_info_copy(stud_id,stud_name,book_name,book_id,date_of_issue,counter_value) from '/home/bmscecse/Desktop/new.csv';
+
+Using 11 child processes
+
+Starting copy of library_space.library_info_copy with columns [stud_id, stud_name, book_name, book_id, date_of_issue, counter_value].
+Processed: 5 rows; Rate:       8 rows/s; Avg. rate:      12 rows/s
+5 rows imported from 1 files in 0.406 seconds (0 skipped).
+
+cqlsh:library_space> select * from library_info where counter_value=2 allow filtering;
+
+ stud_id | stud_name | book_name | book_id | date_of_issue                   | counter_value
+---------+-----------+-----------+---------+---------------------------------+---------------
+       5 |       mno |     book5 |      15 | 2022-09-29 18:30:00.000000+0000 |             2

@@ -1,0 +1,178 @@
+use my_db
+switched to db my_db
+
+db.Student.insert({_id:1,name:"Michael",grade:"VII",hobbies:"reading"})
+WriteResult({ "nInserted" : 1 })
+
+db.Student.update({_id:1},{$set:{hobbies:"cricket"}},{upsert:true})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+db.Student.find()
+{ "_id" : 1, "name" : "Michael", "grade" : "VII", "hobbies" : "cricket" }
+
+db.Student.insert({id:1,name:"Latha",grade:"VIII",hobbies:"Singing"})
+WriteResult({ "nInserted" : 1 })
+
+db.Student.find({name:"Latha"}).pretty()
+{
+	"_id" : ObjectId("6253f120f7936958d67f3c07"),
+	"id" : 1,
+	"name" : "Latha",
+	"grade" : "VIII",
+	"hobbies" : "Singing"
+}
+
+db.Student.find({},{name:1,grade:1,_id:0})
+{ "name" : "Michael", "grade" : "VII" }
+{ "name" : "Latha", "grade" : "VIII" }
+
+db.Student.find({grade:{$eq:"VII"}}).pretty()
+{ "_id" : 1, "name" : "Michael", "grade" : "VII", "hobbies" : "cricket" }
+
+db.Student.find({name:/^L/}).pretty()
+{
+	"_id" : ObjectId("6253f120f7936958d67f3c07"),
+	"id" : 1,
+	"name" : "Latha",
+	"grade" : "VIII",
+	"hobbies" : "Singing"
+}
+
+db.Student.find({name:/a/}).pretty()
+{ "_id" : 1, "name" : "Michael", "grade" : "VII", "hobbies" : "cricket" }
+{
+	"_id" : ObjectId("6253f120f7936958d67f3c07"),
+	"id" : 1,
+	"name" : "Latha",
+	"grade" : "VIII",
+	"hobbies" : "Singing"
+}
+
+db.Student.count()
+2
+
+db.Student.find().sort({name:1}).pretty()
+{
+	"_id" : ObjectId("6253f120f7936958d67f3c07"),
+	"id" : 1,
+	"name" : "Latha",
+	"grade" : "VIII",
+	"hobbies" : "Singing"
+}
+{ "_id" : 1, "name" : "Michael", "grade" : "VII", "hobbies" : "cricket" }
+
+db.Student.save({name:"Ratan",grade:"VII",_id:1})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+db.Student.find()
+{ "_id" : 1, "name" : "Ratan", "grade" : "VII" }
+{ "_id" : ObjectId("6253f120f7936958d67f3c07"), "id" : 1, "name" : "Latha", "grade" : "VIII", "hobbies" : "Singing" }
+
+db.Student.update({_id:1},{$set:{location:"network"}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+db.Student.update({_id:1},{$unset:{location:"network"}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+db.Student.find({name:/n$/}).pretty()
+{ "_id" : 1, "name" : "Ratan", "grade" : "VII" }
+
+db.Student.find({grade:"VII"}).limit(3).pretty()
+{ "_id" : 1, "name" : "Ratan", "grade" : "VII" }
+
+db.Student.count({grade:"VIII"})
+1
+
+db.Student.find().sort({name:1}).pretty()
+{
+	"_id" : ObjectId("6253f120f7936958d67f3c07"),
+	"id" : 1,
+	"name" : "Latha",
+	"grade" : "VIII",
+	"hobbies" : "Singing"
+}
+{ "_id" : 1, "name" : "Ratan", "grade" : "VII" }
+
+db.Student.find().sort({name:-1}).pretty()
+{ "_id" : 1, "name" : "Ratan", "grade" : "VII" }
+{
+	"_id" : ObjectId("6253f120f7936958d67f3c07"),
+	"id" : 1,
+	"name" : "Latha",
+	"grade" : "VIII",
+	"hobbies" : "Singing"
+}
+
+db.Student.find().skip(1).pretty()
+{
+	"_id" : ObjectId("6253f120f7936958d67f3c07"),
+	"id" : 1,
+	"name" : "Latha",
+	"grade" : "VIII",
+	"hobbies" : "Singing"
+}
+
+db.createCollection("food")
+{ "ok" : 1 }
+
+db.food.insert({_id:1,fruits:['grapes','mango']})
+WriteResult({ "nInserted" : 1 })
+
+db.food.insert({_id:2,fruits:['grapes','mango','cherry']})
+WriteResult({ "nInserted" : 1 })
+
+db.food.insert({_id:3,fruits:['banana','cherry']})
+WriteResult({ "nInserted" : 1 })
+
+db.food.find({fruits:['grapes','mango']})
+{ "_id" : 1, "fruits" : [ "grapes", "mango" ] }
+
+db.food.find({'fruits':{$size:2}})
+{ "_id" : 1, "fruits" : [ "grapes", "mango" ] }
+{ "_id" : 3, "fruits" : [ "banana", "cherry" ] }
+
+db.food.find({_id:2},{'fruits':{$slice:2}})
+{ "_id" : 2, "fruits" : [ "grapes", "mango" ] }
+
+db.food.find({fruits:{$all:['grapes','mango']}})
+{ "_id" : 1, "fruits" : [ "grapes", "mango" ] }
+{ "_id" : 2, "fruits" : [ "grapes", "mango", "cherry" ] }
+
+db.food.update({_id:3},{$set:{'fruits.1':'apple'}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+db.food.find()
+{ "_id" : 1, "fruits" : [ "grapes", "mango" ] }
+{ "_id" : 2, "fruits" : [ "grapes", "mango", "cherry" ] }
+{ "_id" : 3, "fruits" : [ "banana", "apple" ] }
+
+db.food.update({_id:2},{$push:{price:{grapes:80,mango:200,cherry:100}}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+db.createCollection("Customers")
+{ "ok" : 1 }
+
+db.Customers.insert({custId:1,acctBal:1000,acctType:"current"})
+WriteResult({ "nInserted" : 1 })
+
+db.Customers.insert({custId:2,acctBal:2000,acctType:"current"})
+WriteResult({ "nInserted" : 1 })
+
+db.Customers.insert({custId:3,acctBal:3000,acctType:"savings"})
+WriteResult({ "nInserted" : 1 })
+
+db.Customers.aggregate({$group:{_id:"$custId",toAcctBal:{$sum:"$acctBal"}}})
+{ "_id" : 3, "toAcctBal" : 3000 }
+{ "_id" : 1, "toAcctBal" : 1000 }
+{ "_id" : 2, "toAcctBal" : 2000 }
+
+db.Customers.aggregate({$match:{acctType:"current"}},{$group:{_id:"$custId",toAcctBal:{$sum:"$acctBal"}}})
+{ "_id" : 2, "toAcctBal" : 2000 }
+{ "_id" : 1, "toAcctBal" : 1000 }
+
+db.Customers.aggregate({$match:{acctType:"current"}},{$group:{_id:"$custId",toAcctBal:{$sum:"$acctBal"}}},{$match:{toAcctBal:{$gt:500}}})
+{ "_id" : 2, "toAcctBal" : 2000 }
+{ "_id" : 1, "toAcctBal" : 1000 }
+
+db.Student.drop()
+false
